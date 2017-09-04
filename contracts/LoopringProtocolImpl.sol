@@ -84,7 +84,8 @@ contract LoopringProtocolImpl is LoopringProtocol {
         uint    fillAmountS;
         uint    lrcReward;
         uint    lrcFee;
-        uint    savingShare;
+        uint    savingShareOfThisOrder;
+        uint    savingShareOfPreviousOrder;
     }
 
     struct Ring {
@@ -97,7 +98,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
 
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Evemts                                                               ///
+    /// Events                                                               ///
     ////////////////////////////////////////////////////////////////////////////
 
     event RingMined(
@@ -371,22 +372,22 @@ contract LoopringProtocolImpl is LoopringProtocol {
                 tokenS.transferFrom(
                     state.owner,
                     prev.owner,
-                    state.fillAmountS - prev.savingShare);
+                    state.fillAmountS - prev.savingShareOfThisOrder);
 
-                if (prev.savingShare > 0) {
+                if (prev.savingShareOfThisOrder > 0) {
                     tokenS.transferFrom(
                         state.owner,
                         ring.feeRecepient,
-                        prev.savingShare);
+                        prev.savingShareOfThisOrder);
                 }
             }
 
             if (state.order.buyNoMoreThanAmountB) {
-                if (state.savingShare > 0) {
+                if (state.savingShareOfThisOrder > 0) {
                     tokenS.transferFrom(
                         state.owner,
                         ring.feeRecepient,
-                        state.savingShare);
+                        state.savingShareOfThisOrder);
                 }
             } 
 
@@ -414,7 +415,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
             }
 
             // TODO(daniel): currently this event doesn't reflect how much
-            // EXCACTLY an order gets or pays.
+            // EXCACTLY an order gets and pays.
             OrderFilled(
                 ringIndex,
                 block.number,
@@ -532,14 +533,14 @@ contract LoopringProtocolImpl is LoopringProtocol {
                                 .div(state.order.amountS));
                     }
 
-                    state.savingShare = savings
+                    state.savingShareOfThisOrder = savings
                         .mul(state.order.savingSharePercentage)
                         .div(SAVING_SHARE_PERCENTAGE_BASE);
 
                     // This implicits that has smaller index in the ring will
                     // be paid LRC reward first, so the orders in the ring does
                     // mater.
-                    if (state.savingShare > 0) {
+                    if (state.savingShareOfThisOrder > 0) {
                         minerLrcSpendable = minerLrcSpendable.sub(state.lrcFee);
                         state.lrcReward = state.lrcFee;
                     }
@@ -779,7 +780,8 @@ contract LoopringProtocolImpl is LoopringProtocol {
                 0,   // fillAmountS
                 0,   // lrcReward
                 0,   // lrcFee
-                0    // savingShare
+                0,   // savingShareOfThisOrder
+                0    // savingShareOfPreviousOrder
                 );
 
             check(orders[i].availableAmountS > 0, "order balance is zero");
