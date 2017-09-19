@@ -22,5 +22,9 @@
     "dirty-chai": "^2.0.0",
     "web3-typescript-typings": "0.0.3",
     "zeppelin-solidity": "^1.2.0"
+  },
+  "dependencies": {
+    "@types/bluebird": "^3.5.11",
+    "bluebird": "^3.5.0"
   }
 }
