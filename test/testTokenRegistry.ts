@@ -20,15 +20,22 @@ contract('TokenRegistry', (accounts: string[])=>{
   });
 
   describe('owner', () => {
+    it('should be able to unregister a token', async () => {
+      let isRegistered = await tokenRegistry.isTokenRegistered(lrcTokenAddr);
+      let isRegisteredBySymbol = await tokenRegistry.isTokenRegisteredBySymbol("LRC");
+      assert.equal(isRegistered, true, 'token should be registered on start');
+      assert.equal(isRegisteredBySymbol, true, 'token should be registered on start');
+
+      await tokenRegistry.unregisterToken(lrcTokenAddr, "LRC", {from: owner});
+      isRegistered = await tokenRegistry.isTokenRegistered(lrcTokenAddr);
+      isRegisteredBySymbol = await tokenRegistry.isTokenRegisteredBySymbol("LRC");
+      assert.equal(isRegistered, false, 'token should be unregistered');
+      assert.equal(isRegisteredBySymbol, false, 'token should be unregistered');
+    });
+
     it('should be able to register a token', async () => {
       const isRegistered = await tokenRegistry.isTokenRegistered(lrcTokenAddr);
       assert.equal(isRegistered, true, 'token should be registered');
-    });
-
-    it('should be able to unregister a token', async () => {
-      await tokenRegistry.unregisterToken(lrcTokenAddr, "LRC", {from: owner});
-      const isRegistered = await tokenRegistry.isTokenRegistered(lrcTokenAddr);
-      assert.equal(isRegistered, false, 'token should be unregistered');
     });
 
   });

@@ -42,9 +42,6 @@ contract('LoopringProtocolImpl', (accounts: string[])=>{
       lrcFee: new BigNumber(10),
       buyNoMoreThanAmountB: false,
       savingSharePercentage: 0,
-      v: 0,
-      r: "",
-      s: "",
     };
 
     const orderPrams2 = {
@@ -58,9 +55,6 @@ contract('LoopringProtocolImpl', (accounts: string[])=>{
       lrcFee: new BigNumber(10),
       buyNoMoreThanAmountB: false,
       savingSharePercentage: 0,
-      v: 0,
-      r: "",
-      s: "",
     };
 
     order1 = new Order(owner, orderPrams1);
@@ -68,6 +62,9 @@ contract('LoopringProtocolImpl', (accounts: string[])=>{
 
     await order1.signAsync();
     await order2.signAsync();
+
+    // console.log("order 1:", order1);
+    // console.log("order 2:", order2);
 
   });
 
@@ -111,16 +108,18 @@ contract('LoopringProtocolImpl', (accounts: string[])=>{
       const feeRecepient = accounts[1];
       const throwIfLRCIsInsuffcient = true;
 
-      await loopringProtocolImpl.submitRing(tokenSList,
-                                            uintArgsList,
-                                            uint8ArgsList,
-                                            buyNoMoreThanAmountBList,
-                                            vList,
-                                            sList,
-                                            rList,
-                                            feeRecepient,
-                                            throwIfLRCIsInsuffcient
-                                           );
+      const tx =  await loopringProtocolImpl.submitRing(tokenSList,
+                                                        uintArgsList,
+                                                        uint8ArgsList,
+                                                        buyNoMoreThanAmountBList,
+                                                        vList,
+                                                        sList,
+                                                        rList,
+                                                        feeRecepient,
+                                                        throwIfLRCIsInsuffcient
+                                                       );
+
+      console.log("tx:", tx);
 
     });
 
